@@ -1,6 +1,4 @@
-import SynkPage from '../pageobjects/page.js';
-import * as path from 'path';
-
+const SynkPage = require('../pageobjects/page.js');
 describe('test web', async () => {
     
     it('Go to website and Closs the Popup', async () => {

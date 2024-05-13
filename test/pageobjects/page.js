@@ -37,6 +37,8 @@ class SynkPage {
             for (let i = 0; i < tocLength; i++) {
                 const element = tocElements[i];
                 const isHighlighted = await element.getAttribute('is-highlighted');
+                const headingText = await element.getAttribute('h2');
+                console.log(headingText);
 
                 if (!isHighlighted) {
                     await element.click();
@@ -54,11 +56,15 @@ class SynkPage {
     }
 
     async snapshot() {
-        // Take screenshot (avoid sensitive information or third-party content)
-        await browser.saveScreenshot('./screenshot/ss.png');
-        console.log('Screenshot saved');
+    const currentDate = new Date();
+    const timestamp = currentDate.toISOString().slice(11, 13);
+
+    // Take screenshot
+    const filename = `./screenshot/screenshot_T${timestamp}.png`;
+    await browser.saveScreenshot(filename);
+    console.log(`Screenshot saved as ${filename}`);
     }
 
 }
 
-export default new SynkPage();
+module.exports = new SynkPage();

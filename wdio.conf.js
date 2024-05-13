@@ -1,4 +1,6 @@
-export const config = {
+const fs = require('fs');
+const report = require('@wdio/allure-reporter')
+exports.config = {
     //
     // ====================
     // Runner Configuration
@@ -230,8 +232,19 @@ export const config = {
      * @param {boolean} result.passed    true if test has passed, otherwise false
      * @param {object}  result.retries   information about spec related retries, e.g. `{ attempts: 0, limit: 0 }`
      */
-    // afterTest: function(test, context, { error, result, duration, passed, retries }) {
-    // },
+    afterTest: function(test, context, { error, result, duration, passed, retries }) {
+          // Check if the test failed
+    if (!passed) {
+        // Capture screenshot
+        const screenshot = browser.takeScreenshot();
+        // Generate a unique filename
+        const filename = `./screenshot/${test.title.replace(/\s+/g, '_')}_${new Date().toISOString().replace(/[^\d]/g, '')}.png`;
+        // Save the screenshot
+        fs.writeFileSync(filename, screenshot, 'base64');
+        // Log the screenshot file path
+        console.log(`Screenshot saved as ${filename}`);
+     }
+    },
 
 
     /**
