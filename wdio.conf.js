@@ -1,5 +1,8 @@
-const fs = require('fs');
-const report = require('@wdio/allure-reporter')
+const report = require('@wdio/allure-reporter');
+const slack = require('wdio-slack-service');
+const { join } = require('path');
+require('dotenv').config();
+const sendEmail = require('./test/service/emailSender.js');
 exports.config = {
     //
     // ====================
@@ -102,7 +105,11 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    // services: [],
+    services: [[slack,{
+        webHookUrl: "https://hooks.slack.com/services/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", // Used to post notification to a particular channel
+        notifyOnlyOnFailure: false, // Send notification only on test failure
+        messageTitle: "Webdriverio Slack Reporter" // Name of the notification
+    }]],
     //
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -232,18 +239,12 @@ exports.config = {
      * @param {boolean} result.passed    true if test has passed, otherwise false
      * @param {object}  result.retries   information about spec related retries, e.g. `{ attempts: 0, limit: 0 }`
      */
-    afterTest: function(test, context, { error, result, duration, passed, retries }) {
-          // Check if the test failed
-    if (!passed) {
-        // Capture screenshot
-        const screenshot = browser.takeScreenshot();
-        // Generate a unique filename
-        const filename = `./screenshot/${test.title.replace(/\s+/g, '_')}_${new Date().toISOString().replace(/[^\d]/g, '')}.png`;
-        // Save the screenshot
-        fs.writeFileSync(filename, screenshot, 'base64');
-        // Log the screenshot file path
-        console.log(`Screenshot saved as ${filename}`);
-     }
+    afterTest: async function(test, context, { error, result, duration, passed, retries }) {
+    if (error && passed) {
+        const screenshotPath = join(browser.config.outputDir, 'screenshot', `${test.title}.png`);
+        await browser.saveScreenshot(screenshotPath);
+        await sendEmail(screenshotPath);
+        }
     },
 
 

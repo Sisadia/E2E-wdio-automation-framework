@@ -7,13 +7,17 @@
     "@wdio/mocha-framework": "^8.36.1",
     "@wdio/spec-reporter": "^8.36.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "wdio-slack-service": "^2.0.9"
   },
   "scripts": {
     "wdio": "wdio run ./wdio.conf.js",
     "allure": "allure generate --single-file --clean allure-results && allure open"
   },
   "dependencies": {
-    "allure": "^0.0.0"
+    "allure": "^0.0.0",
+    "dotenv": "^16.4.5",
+    "nodemailer": "^6.9.13",
+    "wdio-screenshot": "^0.6.0"
   }
 }
